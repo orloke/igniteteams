@@ -1,12 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native'
 
-export const  Group =() => {
+export const Group = () => {
   return (
     <View style={styles.container}>
       <Text>Olá mundo</Text>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -16,4 +15,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+})
