@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native'
 export const Group = () => {
   return (
     <View style={styles.container}>
-      <Text>Olá mundo</Text>
+      <Text>Groups</Text>
     </View>
   )
 }
