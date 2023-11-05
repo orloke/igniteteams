@@ -6,6 +6,9 @@ import { ButtonIcon } from '@components/ButtonIcon'
 import { Input } from '@components/Input'
 import { Filter } from '@components/Filter'
 import { useState } from 'react'
+import { PlayerCard } from '@components/PlayerCard'
+import { ListEmpty } from '@components/ListEmpty'
+import { Button } from '@components/Button/Button'
 
 type Props = {
   /* props go here */
@@ -39,10 +42,24 @@ export function Players() {
           )}
           horizontal
         />
-        <NumbersOfPlayers >
-          {players.length}
-        </NumbersOfPlayers>
+        <NumbersOfPlayers>{players.length}</NumbersOfPlayers>
       </HeaderList>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        data={players}
+        keyExtractor={(item) => item}
+        renderItem={({ item }) => (
+          <PlayerCard onRemove={() => console.log(item)} name={item} />
+        )}
+        ListEmptyComponent={() => (
+          <ListEmpty message="Não há pessoas nesse time" />
+        )}
+        contentContainerStyle={[
+          { paddingBottom: 100 },
+          players.length === 0 && { flex: 1 },
+        ]}
+      />
+      <Button title='Remover Turma' type='SECONDARY' />
     </Container>
   )
 }
