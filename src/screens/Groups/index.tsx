@@ -1,11 +1,11 @@
-import { Header } from '@components/Header'
-import { Container, Title } from './styles'
-import { Highlight } from '@components/Highlight'
+import { Button } from '@components/Button/Button'
 import { GroupCard } from '@components/GroupCard'
+import { Header } from '@components/Header'
+import { Highlight } from '@components/Highlight'
+import { ListEmpty } from '@components/ListEmpty'
 import { useState } from 'react'
 import { FlatList } from 'react-native'
-import { ListEmpty } from '@components/ListEmpty'
-import { Button } from '@components/Button/Button'
+import { Container } from './styles'
 import { useNavigation } from '@react-navigation/native'
 
 export const Group = () => {
@@ -30,7 +30,7 @@ export const Group = () => {
           <ListEmpty message="Que tal cadastrar a primeira turma?" />
         )}
       />
-      <Button title='Criar nova turma' onPress={handleNewGroup} />
+      <Button title="Criar nova turma" onPress={handleNewGroup} />
     </Container>
   )
 }
