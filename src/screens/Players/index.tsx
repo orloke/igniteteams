@@ -9,20 +9,24 @@ import { useState } from 'react'
 import { PlayerCard } from '@components/PlayerCard'
 import { ListEmpty } from '@components/ListEmpty'
 import { Button } from '@components/Button/Button'
+import { useRoute } from '@react-navigation/native'
 
-type Props = {
-  /* props go here */
+type RoutePrams = {
+  group: string
 }
 
 export function Players() {
   const [team, setTeam] = useState('')
   const [players, setPlayers] = useState([])
 
+  const route = useRoute()
+  const { group } = route.params as RoutePrams
+
   return (
     <Container>
       <Header showBackButton />
       <Highlight
-        title="Nome da turma"
+        title={group || 'Nome da turma'}
         subTitle="adicione a galera e separe os times"
       />
       <Form>
@@ -59,7 +63,7 @@ export function Players() {
           players.length === 0 && { flex: 1 },
         ]}
       />
-      <Button title='Remover Turma' type='SECONDARY' />
+      <Button title="Remover Turma" type="SECONDARY" />
     </Container>
   )
 }
