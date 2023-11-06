@@ -5,7 +5,7 @@ import { Highlight } from '@components/Highlight'
 import { ButtonIcon } from '@components/ButtonIcon'
 import { Input } from '@components/Input'
 import { Filter } from '@components/Filter'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PlayerCard } from '@components/PlayerCard'
 import { ListEmpty } from '@components/ListEmpty'
 import { Button } from '@components/Button/Button'
@@ -13,6 +13,8 @@ import { useRoute } from '@react-navigation/native'
 import { AppError } from '@utils/AppError'
 import { playerAddByGroup } from '@storage/player/playerAddByGroup'
 import { playersGetByGroup } from '@storage/player/playerGetByGroup'
+import { playersGetByGroupAndTeam } from '@storage/player/playerGetByGroupAndTeam'
+import { PlayerStorageDTO } from '@storage/player/PlayerStorageDTO'
 
 type RoutePrams = {
   group: string
@@ -20,8 +22,8 @@ type RoutePrams = {
 
 export function Players() {
   const [newPlayerName, setNewPlayerName] = useState('')
-  const [team, setTeam] = useState('')
-  const [players, setPlayers] = useState([])
+  const [team, setTeam] = useState<'Time A' | 'Time B'>('Time A')
+  const [players, setPlayers] = useState<PlayerStorageDTO[]>([])
 
   const route = useRoute()
   const { group } = route.params as RoutePrams
@@ -45,6 +47,7 @@ export function Players() {
 
     try {
       await playerAddByGroup(newPlayer, group)
+      fetchPlayersByTeam(group, team)
     } catch (error) {
       if (error instanceof AppError) {
         return Alert.alert('Nova pessoa', error.message)
@@ -53,6 +56,21 @@ export function Players() {
       Alert.alert('Nova pessoa', 'Não foi possível adicionar.')
     }
   }
+
+  const fetchPlayersByTeam = async (group: string, team: string) => {
+    try {
+      const playerByTeam = await playersGetByGroupAndTeam(group, team)
+      setPlayers(playerByTeam)
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Pessoas', 'Não foi possível adicionar carregar as pessoas')
+    }
+  }
+
+  useEffect(() => {
+    fetchPlayersByTeam(group, team)
+  }, [team])
+
 
   return (
     <Container>
@@ -77,7 +95,7 @@ export function Players() {
         <FlatList
           data={['Time A', 'Time B']}
           keyExtractor={(item) => item}
-          renderItem={({ item }) => (
+          renderItem={({ item }: { item: 'Time A' | 'Time B' }) => (
             <Filter
               title={item}
               isActive={item === team}
@@ -91,9 +109,9 @@ export function Players() {
       <FlatList
         showsVerticalScrollIndicator={false}
         data={players}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
-          <PlayerCard onRemove={() => console.log(item)} name={item} />
+          <PlayerCard onRemove={() => console.log(item)} name={item.name} />
         )}
         ListEmptyComponent={() => (
           <ListEmpty message="Não há pessoas nesse time" />
