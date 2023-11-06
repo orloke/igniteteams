@@ -1,11 +1,11 @@
-import { Alert, FlatList, View } from 'react-native'
+import { Alert, FlatList, TextInput, View } from 'react-native'
 import { Container, Form, HeaderList, NumbersOfPlayers } from './styles'
 import { Header } from '@components/Header'
 import { Highlight } from '@components/Highlight'
 import { ButtonIcon } from '@components/ButtonIcon'
 import { Input } from '@components/Input'
 import { Filter } from '@components/Filter'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { PlayerCard } from '@components/PlayerCard'
 import { ListEmpty } from '@components/ListEmpty'
 import { Button } from '@components/Button/Button'
@@ -24,6 +24,8 @@ export function Players() {
   const [newPlayerName, setNewPlayerName] = useState('')
   const [team, setTeam] = useState<'Time A' | 'Time B'>('Time A')
   const [players, setPlayers] = useState<PlayerStorageDTO[]>([])
+
+  const inputRef = useRef<TextInput>(null)
 
   const route = useRoute()
   const { group } = route.params as RoutePrams
@@ -47,6 +49,8 @@ export function Players() {
 
     try {
       await playerAddByGroup(newPlayer, group)
+      inputRef.current?.blur()
+      setNewPlayerName('')
       fetchPlayersByTeam(group, team)
     } catch (error) {
       if (error instanceof AppError) {
@@ -71,7 +75,6 @@ export function Players() {
     fetchPlayersByTeam(group, team)
   }, [team])
 
-
   return (
     <Container>
       <Header showBackButton />
@@ -81,10 +84,13 @@ export function Players() {
       />
       <Form>
         <Input
+          inputRef={inputRef}
           placeholder="Nome da pessoa"
           autoCorrect={false}
           onChangeText={setNewPlayerName}
           value={newPlayerName}
+          onSubmitEditing={() => handleAddPlayer(newPlayerName, team, group)}
+          returnKeyType='done'
         />
         <ButtonIcon
           icon="add"
