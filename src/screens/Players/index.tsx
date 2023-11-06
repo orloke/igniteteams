@@ -9,13 +9,14 @@ import { useEffect, useRef, useState } from 'react'
 import { PlayerCard } from '@components/PlayerCard'
 import { ListEmpty } from '@components/ListEmpty'
 import { Button } from '@components/Button/Button'
-import { useRoute } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { AppError } from '@utils/AppError'
 import { playerAddByGroup } from '@storage/player/playerAddByGroup'
 import { playersGetByGroup } from '@storage/player/playerGetByGroup'
 import { playersGetByGroupAndTeam } from '@storage/player/playerGetByGroupAndTeam'
 import { PlayerStorageDTO } from '@storage/player/PlayerStorageDTO'
 import { playerRemoveByGroup } from '@storage/player/playerRemoveByGroup'
+import { groupRemoveByName } from '@storage/group/groupRemoveByName'
 
 type RoutePrams = {
   group: string
@@ -27,6 +28,7 @@ export function Players() {
   const [players, setPlayers] = useState<PlayerStorageDTO[]>([])
 
   const inputRef = useRef<TextInput>(null)
+  const navigation = useNavigation()
 
   const route = useRoute()
   const { group } = route.params as RoutePrams
@@ -72,7 +74,11 @@ export function Players() {
     }
   }
 
-  const handlePlayerRemove = async (playerName: string, group: string, team:string) => {
+  const handlePlayerRemove = async (
+    playerName: string,
+    group: string,
+    team: string
+  ) => {
     try {
       await playerRemoveByGroup(playerName, group)
       await fetchPlayersByTeam(group, team)
@@ -80,6 +86,23 @@ export function Players() {
       console.log(error)
       Alert.alert('Pessoas', 'Não foi possível remover essa pessoa')
     }
+  }
+
+  const groupRemove = async (group: string) => {
+    try {
+      await groupRemoveByName(group)
+      navigation.navigate('groups')
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Remover grupo', 'Não foi possível remover o grupo.')
+    }
+  }
+
+  const handleGroupRemove = async (group:string) => {
+    Alert.alert('Remover', 'Deseja remover o grupo?', [
+      { text: 'Não', style: 'cancel' },
+      {text: 'Sim', onPress: ()=>groupRemove(group)}
+    ])
   }
 
   useEffect(() => {
@@ -141,7 +164,11 @@ export function Players() {
           players.length === 0 && { flex: 1 },
         ]}
       />
-      <Button title="Remover Turma" type="SECONDARY" />
+      <Button
+        title="Remover Turma"
+        type="SECONDARY"
+        onPress={() => handleGroupRemove(group)}
+      />
     </Container>
   )
 }
